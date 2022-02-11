@@ -58,6 +58,6 @@ int main()
     printf("%d\n",cnt);
 
 
-
+    free(meeting);
     return 0;
 }
