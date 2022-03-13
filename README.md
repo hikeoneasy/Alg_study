@@ -1,5 +1,6 @@
 # Alg_study: I wanna Master
-
+Team member : **👑Keon-hee Choi**, Su-kyung Bang, Jaewon-heo
+intern Participant: Donhyeon Park, Yoon-seo Ki, Hyejin Park, Chae-yeon Park, Hee-jeon Won, Chan Choi, Joon-young No    
 그래서 다음 일정에 맞게 코딩테스트 연습을 하고자 합니다.
 
 [pdf] 
