@@ -366,8 +366,12 @@ int main() {
 
 		case 3:	printf("삭제할 문자를 입력하세요 : ");
 			scanf(" %c", &key);
-
+			//deleteNode(&root, key);
+			deleteNode_recur(root, key);
+			displayInorder(root); printf("\n");
+			showTree(root);
 			break;
+
 
 		case 4: printf("찾을 문자를 입력하세요 : ");
 			scanf(" %c", &key);
