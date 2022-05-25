@@ -21,14 +21,14 @@ typedef struct _NODEMAP_ {
 	NodeData data;
 }NODEMAP;
 
-TREENODE* searchNode(TREENODE* root, char x);			// ¹İº¹Àû ¹æ¹ı
-TREENODE* searchNode_recur(TREENODE* root, char x);		// Àç±ÍÀû ¹æ¹ı
+TREENODE* searchNode(TREENODE* root, char x);			// ë°˜ë³µì  ë°©ë²•
+TREENODE* searchNode_recur(TREENODE* root, char x);		// ì¬ê·€ì  ë°©ë²•
 
-void insertNode(TREENODE** p, char x);					// ¹İº¹Àû ¹æ¹ı
-TREENODE* insertNode_recur(TREENODE* p, char x);		// ¼øÈ¯Àû(Àç±ÍÀû) ¹æ¹ı
+void insertNode(TREENODE** p, char x);					// ë°˜ë³µì  ë°©ë²•
+TREENODE* insertNode_recur(TREENODE* p, char x);		// ìˆœí™˜ì (ì¬ê·€ì ) ë°©ë²•
 
-void deleteNode(TREENODE** root, element key);			// ¹İº¹Àû¹æ¹ı
-TREENODE* deleteNode_recur(TREENODE* root, int key);			// Àç±ÍÀû
+void deleteNode(TREENODE** root, element key);			// ë°˜ë³µì ë°©ë²•
+TREENODE* deleteNode_recur(TREENODE* root, int key);			// ì¬ê·€ì 
 
 TREENODE* min_value_node(TREENODE* node)
 {
@@ -107,15 +107,87 @@ TREENODE* insertNode_recur(TREENODE* p, char x) {
 
 void deleteNode(TREENODE** root, element key)
 {
+	TREENODE* parent = NULL, * p = NULL, * succ = NULL, * succ_parrent = NULL, * child = NULL;
+
+	p = *root;
 	
+	while ((p != NULL) && (p->key != key))
+	{
+		parent = p;
+		if (key < p->key) p = p->left;
+		else p = p -> right;
+	}
+	if ((p->left == NULL) && (p->right == NULL))
+	{
+		if (parent != NULL) {
+			if (parent->left == p) parent->left = NULL;
+			else parent->right = NULL;
+
+		}
+		else *root = NULL;
+	}
+
+	else if ((p->left == NULL) || (p->right == NULL))
+	{
+		if (p->left != NULL) child = p->left;
+		else child = p->right;
+
+		if (parent != NULL)
+		{
+			if (parent->left == p) parent->left = child;
+			else parent->right = child;
+		}
+		else *root = child;
+	}
+	else {
+		succ_parrent = p;
+		succ = p->left;
+		while (succ->right != NULL)
+		{
+			succ_parrent = succ;
+			succ = succ->right;
+		}
+		if (succ_parrent->left == succ) succ_parrent->left = succ->left;
+		else succ_parrent->right = succ->left;
+		p->key = succ->key;
+		p = succ;
+	}
+	
+	
+	free(p);
 }
 
 TREENODE* deleteNode_recur(TREENODE* root, int key)
 {
-	
-}
+	TREENODE* temp;
+	if (root == NULL) return root;
 
-// ÀÌÁø Å½»ö Æ®¸®¸¦ ÁßÀ§ ¼øÈ¸ÇÏ¸é¼­ Ãâ·ÂÇÏ´Â ¿¬»ê
+	if (key < root->key) root->left = deleteNode_recur(root->left, key);
+
+	else if (key > root->key) root->right = deleteNode_recur(root->right, key);
+
+	else {
+		if (root->left == NULL)
+		{
+			temp = root->right;
+			free(root);
+			return temp;
+		}
+		else if (root->right == NULL)
+		{
+			temp = root->left;
+			free(root);
+			return temp;
+		}
+		temp = min_value_node(root->right);
+		
+		root->key = temp->key;
+		
+		root->right = deleteNode_recur(root->right, temp->key);
+	}
+	return root;
+}
+// ì´ì§„ íƒìƒ‰ íŠ¸ë¦¬ë¥¼ ì¤‘ìœ„ ìˆœíšŒí•˜ë©´ì„œ ì¶œë ¥í•˜ëŠ” ì—°ì‚°
 void displayInorder(TREENODE * root) {
 	if (root) {
 		displayInorder(root->left);
@@ -176,13 +248,13 @@ void showTree(TREENODE* node)
 		memset(square[cnt_i], '.', numOfNodes);
 	}
 
-	// level order ¼øÀ¸·Î treeArray¿¡ ³ëµåÀÇ µ¥ÀÌÅÍ »ğÀÔ
+	// level order ìˆœìœ¼ë¡œ treeArrayì— ë…¸ë“œì˜ ë°ì´í„° ì‚½ì…
 	pos = 1;
 	for (cnt_i = 1; cnt_i <= height; cnt_i++) {
 		printGivenLevel(node, cnt_i, treeArray, pos);
 	}
 
-	// ÇÑÄ­¾¿ ¿ŞÂÊÀ¸·Î ÀÌµ¿
+	// í•œì¹¸ì”© ì™¼ìª½ìœ¼ë¡œ ì´ë™
 	for (cnt_i = 1; cnt_i <= numOfNodes; cnt_i++)
 	{
 		treeArray[cnt_i - 1] = treeArray[cnt_i];
@@ -242,13 +314,13 @@ void showTree(TREENODE* node)
 
 void menu() {
 	printf("\n*---------------------------*");
-	printf("\n\t1 : Æ®¸® Ãâ·Â");
-	printf("\n\t2 : ¹®ÀÚ »ğÀÔ");
-	printf("\n\t3 : ¹®ÀÚ »èÁ¦");
-	printf("\n\t4 : ¹®ÀÚ °Ë»ö");
-	printf("\n\t5 : Á¾·á");
+	printf("\n\t1 : íŠ¸ë¦¬ ì¶œë ¥");
+	printf("\n\t2 : ë¬¸ì ì‚½ì…");
+	printf("\n\t3 : ë¬¸ì ì‚­ì œ");
+	printf("\n\t4 : ë¬¸ì ê²€ìƒ‰");
+	printf("\n\t5 : ì¢…ë£Œ");
 	printf("\n*---------------------------*");
-	printf("\n¸Ş´ºÀÔ·Â >> ");
+	printf("\në©”ë‰´ì…ë ¥ >> ");
 }
 
 int main() {
@@ -278,34 +350,34 @@ int main() {
 	while (1) {
 		menu();
 		scanf("%c", &choice);
-		if (choice - '0' < 1) { printf("¾ø´Â ¸Ş´ºÀÔ´Ï´Ù. ¸Ş´º¸¦ ´Ù½Ã ¼±ÅÃÇÏ¼¼¿ä! \n"); break; }
+		if (choice - '0' < 1) { printf("ì—†ëŠ” ë©”ë‰´ì…ë‹ˆë‹¤. ë©”ë‰´ë¥¼ ë‹¤ì‹œ ì„ íƒí•˜ì„¸ìš”! \n"); break; }
 		switch (choice - '0') {
-		case 1:	printf("\t[ÀÌÁø Æ®¸® Ãâ·Â]  ");
+		case 1:	printf("\t[ì´ì§„ íŠ¸ë¦¬ ì¶œë ¥]  ");
 			displayInorder(root);  printf("\n");
 			showTree(root);
 			break;
 
-		case 2:	printf("»ğÀÔÇÒ ¹®ÀÚ¸¦ ÀÔ·ÂÇÏ¼¼¿ä : ");
+		case 2:	printf("ì‚½ì…í•  ë¬¸ìë¥¼ ì…ë ¥í•˜ì„¸ìš” : ");
 			scanf(" %c", &key);
 			insertNode(&root, key);
 			displayInorder(root);  printf("\n");
 			showTree(root);
 			break;
 
-		case 3:	printf("»èÁ¦ÇÒ ¹®ÀÚ¸¦ ÀÔ·ÂÇÏ¼¼¿ä : ");
+		case 3:	printf("ì‚­ì œí•  ë¬¸ìë¥¼ ì…ë ¥í•˜ì„¸ìš” : ");
 			scanf(" %c", &key);
 
 			break;
 
-		case 4: printf("Ã£À» ¹®ÀÚ¸¦ ÀÔ·ÂÇÏ¼¼¿ä : ");
+		case 4: printf("ì°¾ì„ ë¬¸ìë¥¼ ì…ë ¥í•˜ì„¸ìš” : ");
 			scanf(" %c", &key);
 			//searchNode_recur(root, key);
-			//ÀÌ°É ¾î¶»°Ô ¹Ş¾Æ¿Í¼­ º¸¿©ÁÙÁö »ı°¢ÇÏ±â 
+			//ì´ê±¸ ì–´ë–»ê²Œ ë°›ì•„ì™€ì„œ ë³´ì—¬ì¤„ì§€ ìƒê°í•˜ê¸° 
 			break;
 
 		case 5: 	return 0;
 
-		default: printf("¾ø´Â ¸Ş´ºÀÔ´Ï´Ù. ¸Ş´º¸¦ ´Ù½Ã ¼±ÅÃÇÏ¼¼¿ä! \n");
+		default: printf("ì—†ëŠ” ë©”ë‰´ì…ë‹ˆë‹¤. ë©”ë‰´ë¥¼ ë‹¤ì‹œ ì„ íƒí•˜ì„¸ìš”! \n");
 			break;
 		}
 	}
